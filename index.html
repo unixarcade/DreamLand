@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="Dream Land — a 53rd century compiler, typing environment, C bridge, raw x86-64 machine gate, and UEFI boot environment by Luminosity + Gpteus.">
+<title>DREAM LAND // 53RD CENTURY COMPUTATIONAL ENVIRONMENT</title>
+<style>
+:root{
+  --bg:#000;--ink:#d9ffe3;--g:#49ff63;--g2:#16a83e;--white:#fff;
+  --muted:#6fa27a;--grid:rgba(73,255,99,.075);--line:rgba(73,255,99,.35);
+  --panel:rgba(0,12,4,.74);--shadow:0 0 28px rgba(73,255,99,.13);
+  --mx:50vw;--my:24vh;
+}
+*{box-sizing:border-box}
+html{background:#000;color-scheme:dark;scroll-behavior:smooth}
+body{margin:0;background:#000;color:var(--ink);font:15px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;overflow-x:hidden}
+a{color:var(--g);text-decoration:none}a:hover,a:focus{text-decoration:underline;color:#fff}
+::selection{background:var(--g);color:#000}
+#field{position:fixed;inset:0;z-index:-3;width:100%;height:100%;background:#000}
+.noise{pointer-events:none;position:fixed;inset:0;z-index:99;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E")}
+.scan{pointer-events:none;position:fixed;inset:0;z-index:98;background:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 4px);mix-blend-mode:screen}
+.glow{pointer-events:none;position:fixed;inset:0;z-index:-2;background:radial-gradient(700px circle at var(--mx) var(--my),rgba(73,255,99,.08),transparent 60%)}
+.frame{position:fixed;inset:8px;z-index:97;pointer-events:none;border:1px solid transparent;border-image:repeating-linear-gradient(90deg,var(--g) 0 14px,#fff 14px 28px,transparent 28px 34px) 1}
+.frame:after{content:"";position:absolute;inset:6px;border:1px solid rgba(73,255,99,.18)}
+.wrap{width:min(1180px,calc(100% - 36px));margin:0 auto;padding:28px 0 110px}
+.telemetry{position:sticky;top:0;z-index:50;display:flex;gap:14px;align-items:center;white-space:nowrap;overflow:hidden;padding:8px 12px;margin:0 0 18px;background:rgba(0,0,0,.88);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.telemetry strong{color:#fff}.pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 10px var(--g);margin-right:7px}.telemetry .right{margin-left:auto;color:var(--muted)}
+.hero{min-height:74vh;display:grid;align-content:center;position:relative;padding:40px 0 52px}
+.kicker{color:var(--g);letter-spacing:.24em;text-transform:uppercase;font-size:12px}
+h1{font-size:clamp(44px,9vw,120px);line-height:.83;margin:.16em 0 .12em;letter-spacing:-.075em;color:#fff;text-shadow:0 0 24px rgba(255,255,255,.08)}
+h1 span{display:block;color:var(--g);font-size:.37em;line-height:1.05;letter-spacing:.11em;margin-top:18px}
+.lede{max-width:860px;font-size:clamp(16px,2vw,22px);color:#bceec8;margin:24px 0 28px}.lede b{color:#fff}
+.badges,.actions{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.badge,.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);padding:7px 10px;background:#010603;color:var(--g);box-shadow:inset 0 0 20px rgba(73,255,99,.025)}
+.btn{padding:11px 14px;text-transform:uppercase;letter-spacing:.08em}.btn.primary{background:var(--g);color:#000;border-color:var(--g);font-weight:900}.btn.white{color:#fff;border-color:rgba(255,255,255,.55)}
+.promptbox{position:relative;margin:26px 0 0;padding:18px 18px 16px;background:rgba(0,0,0,.84);border:1px solid rgba(255,255,255,.26);box-shadow:var(--shadow)}
+.promptbox:before,.promptbox:after,.checker{content:"";position:absolute;left:0;right:0;height:2px;background:repeating-linear-gradient(90deg,var(--g) 0 18px,#fff 18px 36px,transparent 36px 44px)}
+.promptbox:before{top:-1px}.promptbox:after{bottom:-1px}
+.terminal-head{display:flex;gap:12px;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:10px}.terminal-head b{color:#fff}
+.terminal-out{height:210px;overflow:auto;white-space:pre-wrap;color:#bde8c5;padding:5px 0 14px;scrollbar-color:var(--g) #000}
+.promptrow{display:flex;align-items:center;gap:8px;border-top:1px solid rgba(73,255,99,.18);padding-top:12px}.promptrow label{color:var(--g);font-weight:800}.promptrow input{flex:1;background:transparent;border:0;outline:0;color:#fff;font:inherit;caret-color:#fff;min-width:0}
+.micro{font-size:12px;color:var(--muted);margin-top:9px}.cursor{display:inline-block;width:7px;height:1.1em;vertical-align:-.2em;background:#fff;animation:blink 1.05s steps(1,end) infinite}@keyframes blink{50%{opacity:0}}
+.section{margin:58px 0;scroll-margin-top:70px}.eyebrow{font-size:12px;color:var(--g);letter-spacing:.17em}.section h2{font-size:clamp(26px,4vw,50px);line-height:1;margin:.25em 0 .5em;color:#fff;letter-spacing:-.035em}.section h3{color:var(--g);font-size:18px}.section p{max-width:920px}.rule{height:1px;background:linear-gradient(90deg,var(--g),rgba(255,255,255,.3),transparent);margin:16px 0 24px}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.card{grid-column:span 4;position:relative;background:linear-gradient(145deg,rgba(0,18,6,.86),rgba(0,0,0,.86));border:1px solid rgba(73,255,99,.24);padding:18px;min-height:180px;box-shadow:var(--shadow);overflow:hidden}.card:after{content:"";position:absolute;right:-34px;bottom:-34px;width:90px;height:90px;border:1px solid rgba(73,255,99,.12);transform:rotate(45deg)}.card.white{border-color:rgba(255,255,255,.3)}.card h3{margin:.2em 0 .5em;color:#fff}.card .sig{color:var(--g);font-size:11px;letter-spacing:.14em}.card p{color:#9fc5a8}.card.wide{grid-column:span 6}.card.full{grid-column:1/-1}
+pre{overflow:auto;padding:16px;background:#010502;border:1px solid rgba(73,255,99,.22);color:#caffd5;box-shadow:inset 0 0 28px rgba(73,255,99,.02)}code{font-family:inherit}.codebar{font-size:11px;color:var(--muted);margin-bottom:-1px;border:1px solid rgba(73,255,99,.22);border-bottom:0;padding:6px 10px;background:#000}
+.ladder{display:grid;grid-template-columns:1fr auto 1fr;gap:15px;align-items:center}.ladder .node{padding:14px;border:1px solid rgba(73,255,99,.25);background:#010502}.arrow{color:#fff;font-size:22px}.matrix{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line)}.matrix>div{padding:14px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.matrix>div:nth-child(3n){border-right:0}.matrix b{color:#fff}.matrix small{color:var(--muted)}
+.film{min-height:240px;display:flex;flex-direction:column;justify-content:space-between}.film .title{font-size:24px;color:#fff;line-height:1}.film .glyph{font-size:42px;line-height:1;color:var(--g)}.film a.enter{display:inline-block;margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.release{display:flex;justify-content:space-between;gap:20px;align-items:center;border-bottom:1px solid rgba(73,255,99,.16);padding:11px 0}.release b{color:#fff}.release span{color:var(--muted);font-size:12px;text-align:right}
+details{border:1px solid rgba(73,255,99,.2);background:#010402;margin:10px 0}summary{cursor:pointer;padding:12px 14px;color:#fff}details>div{padding:0 14px 14px;color:#aaceb2}
+.quote{font-size:clamp(20px,3vw,38px);color:#fff;border-left:3px solid var(--g);padding:10px 0 10px 20px;max-width:1000px}.quote em{color:var(--g);font-style:normal}
+.footer{margin-top:90px;padding:28px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;color:var(--muted)}.footer strong{color:#fff}.footer .big{font-size:clamp(26px,5vw,58px);line-height:.9;color:#fff;letter-spacing:-.05em}
+.reveal{opacity:0;transform:translateY(12px);transition:opacity .55s ease,transform .55s ease}.reveal.on{opacity:1;transform:none}
+body.calm .reveal{opacity:1;transform:none;transition:none}body.calm .cursor{animation:none}body.calm .scan,body.calm .noise{display:none}
+@media(max-width:820px){.card,.card.wide{grid-column:1/-1}.matrix{grid-template-columns:1fr}.matrix>div{border-right:0}.ladder{grid-template-columns:1fr}.arrow{transform:rotate(90deg);text-align:center}.telemetry .right{display:none}.hero{min-height:auto;padding-top:70px}.footer{grid-template-columns:1fr}.wrap{width:min(100% - 28px,1180px)}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}.cursor{animation:none}.scan,.noise{display:none}}
+</style>
+</head>
+<body>
+<canvas id="field" aria-hidden="true"></canvas><div class="glow" aria-hidden="true"></div><div class="scan" aria-hidden="true"></div><div class="noise" aria-hidden="true"></div><div class="frame" aria-hidden="true"></div>
+<main class="wrap">
+  <div class="telemetry"><span><span class="pulse"></span><strong>DREAM LAND 53</strong></span><span>DRM3:READY // CBRIDGE:READY // METAL:READY // ASM:GATE-OPEN</span><span class="right">CALM:<span id="calmstate">OFF</span></span></div>
+
+  <header class="hero" id="home">
+    <div class="kicker">compiler environment // boot environment // typing environment</div>
+    <h1>DREAM LAND<span>A SMALL LANGUAGE WITH A VERY LARGE BASEMENT</span></h1>
+    <p class="lede">Start at <b>Dream&gt;</b>. Compile. Run. Inherit C. Call the native world. Touch memory. Emit machine bytes. Build COFF. Boot through UEFI. Keep descending until the abstraction you need is the one you wrote.</p>
+    <div class="badges"><span class="badge">DREAM C</span><span class="badge">DRM3</span><span class="badge">C ABI</span><span class="badge">RAW X64</span><span class="badge">COFF</span><span class="badge">UEFI</span><span class="badge">WINDOWS</span><span class="badge">LINUX</span></div>
+    <div class="actions"><a class="btn primary" href="#terminal">ENTER DREAM&gt;</a><a class="btn white" href="./DreamLand-UEFI-4.0-Ventoy.iso">BOOT UEFI ISO</a><a class="btn" href="./DreamLand-Linux-4.0-x86_64.tar.gz">LINUX</a><a class="btn" href="./DreamLand-3.5-Windows-x86_64-FULL.zip">WINDOWS</a><a class="btn" href="https://github.com/unixarcade/DreamLand">REPOSITORY</a><button class="btn" id="calm" type="button">CALM</button></div>
+
+    <div class="promptbox" id="terminal">
+      <div class="terminal-head"><b>DREAM COMMAND JEWEL</b><span>type <b>help</b> // `/` focuses // ESC = calm</span></div>
+      <div class="terminal-out" id="out" role="log" aria-live="polite">DREAM LAND // CARRIER DETECTED
+one line of telemetry // one blank breath // then the machine
+
+Dream knows: help · boot · install · language · asm · cbridge · metal · films · greetz</div>
+      <form class="promptrow" id="termform"><label for="cmd">Dream&gt;</label><input id="cmd" autocomplete="off" spellcheck="false" aria-label="Dream Land command"><span class="cursor" aria-hidden="true"></span></form>
+      <div class="micro">This terminal is a portal/navigation ritual, not the Dream compiler itself. Download or boot the real environment above.</div>
+    </div>
+  </header>
+
+  <section class="section reveal" id="what">
+    <div class="eyebrow">0x00 // WHAT THIS MACHINE IS</div><h2>THE SURFACE IS SMALL.<br>THE ESCAPE HATCHES ARE NOT.</h2><div class="rule"></div>
+    <div class="grid">
+      <article class="card white"><div class="sig">HOSTED</div><h3>Dream C + DRM3</h3><p>A compact compiler and stack VM. Expressions compile once; programs execute bytecode rather than reparsing source in the hot loop.</p></article>
+      <article class="card"><div class="sig">INHERITANCE</div><h3>CBridge</h3><p>Real C headers, linked libraries, typed scalar/pointer doors, raw C adapters for the ugly edges. Dream inherits the civilization without copying the language.</p></article>
+      <article class="card white"><div class="sig">DESCENT</div><h3>Metal / COFF / UEFI</h3><p>Raw bytes, machine images, x86-64 COFF objects, firmware boot. The environment can live before a conventional operating system exists.</p></article>
+    </div>
+  </section>
+
+  <section class="section reveal" id="doors">
+    <div class="eyebrow">0x01 // THREE DOORS</div><h2>GET TO DREAM&gt; FAST.</h2><div class="rule"></div>
+    <div class="grid">
+      <article class="card wide"><div class="sig">LINUX // ONE LINE</div><h3>./dream.sh</h3><div class="codebar">portable folder</div><pre><code>./dream.sh</code></pre><p>Bootstrap, build, launch. Or install for one user with the single installer script.</p><a href="./DreamLand-Linux-4.0-x86_64.tar.gz">Linux tar.gz →</a></article>
+      <article class="card wide"><div class="sig">UEFI // VENTOY</div><h3>Boot the language</h3><div class="codebar">firmware path</div><pre><code>POWER → UEFI → BOOTX64.EFI → Dream&gt;</code></pre><p>Type Dream code before Windows or Linux starts. The UEFI package carries the compiler/VM into firmware.</p><a href="./DreamLand-UEFI-4.0-Ventoy.iso">Ventoy ISO →</a></article>
+      <article class="card full"><div class="sig">WINDOWS // NATIVE</div><h3>DreamLand-3.5.exe</h3><p>Native Win32 Dream surface, compiler, VM, CBridge, raw memory, raw x64 and build gates. No browser shell required.</p><a href="./DreamLand-3.5-Windows-x86_64-FULL.zip">Windows package →</a></article>
+    </div>
+  </section>
+
+  <section class="section reveal" id="language">
+    <div class="eyebrow">0x02 // LANGUAGE</div><h2>ENOUGH WORDS TO REACH THE MACHINE.</h2><div class="rule"></div>
+    <div class="grid">
+      <article class="card wide"><h3>Dream loop</h3><pre><code>macro LIMIT = 8;
+var x = 0;
+loop:
+print(x, "  ");
+x = x + 1;
+if x &lt; LIMIT goto loop;
+halt;</code></pre></article>
+      <article class="card wide"><h3>ANSI in one breath</h3><pre><code>macro G = "\e[92m";
+macro R = "\e[0m";
+print(G, "DREAM", R);</code></pre><p>`\e` is byte 27 in Dream strings. Terminal/native builds can speak ANSI without a terminal framework.</p></article>
+      <article class="card"><h3>Memory</h3><pre><code>var p = alloc(8);
+poke64(p, 0x53);
+println(peek64(p));
+free(p);</code></pre></article>
+      <article class="card"><h3>Raw x64</h3><pre><code>var n = asm {
+ B8 2A 00 00 00 C3
+};
+println(n);</code></pre></article>
+      <article class="card"><h3>Native call</h3><pre><code>var f = api("libc.so.6","puts");
+native(f,"HELLO FROM DREAM");</code></pre></article>
+    </div>
+  </section>
+
+  <section class="section reveal" id="ladder">
+    <div class="eyebrow">0x03 // ESCAPE LADDER</div><h2>WHEN A LAYER STOPS HELPING, GO THROUGH IT.</h2><div class="rule"></div>
+    <div class="matrix">
+      <div><b>Dream syntax</b><br><small>small surface</small></div><div><b>DRM3</b><br><small>compiled VM image</small></div><div><b>CBridge</b><br><small>existing civilization</small></div>
+      <div><b>api + native</b><br><small>host ABI</small></div><div><b>peek + poke</b><br><small>raw memory</small></div><div><b>asm</b><br><small>processor bytes</small></div>
+      <div><b>metal</b><br><small>flat images</small></div><div><b>COFF</b><br><small>normal linker rendezvous</small></div><div><b>UEFI</b><br><small>pre-OS environment</small></div>
+    </div>
+    <p class="quote">Dream is a typing environment with an <em>escape hatch through the floor.</em></p>
+  </section>
+
+  <section class="section reveal" id="cbridge">
+    <div class="eyebrow">0x04 // C CIVILIZATION</div><h2>INHERIT IT. DO NOT BECOME IT.</h2><div class="rule"></div>
+    <div class="grid">
+      <article class="card wide"><pre><code>cimport &lt;stdio.h&gt;;
+cimport &lt;string.h&gt;;
+extern c i32 puts(cstr);
+extern c u64 strlen(cstr);
+
+puts("DREAM -&gt; C");
+println(strlen("bajillions"));</code></pre></article>
+      <article class="card wide"><p>Functions, libraries, headers and static objects can enter through the ABI/compiler boundary. If an API is full of macros, variadics, structs-by-value or ancient magic, wrap the weirdness in a tiny <code>c { ... }</code> adapter and keep Dream clean.</p><pre><code>Dream → CBridge → GCC/Clang → libc / SDL / SQLite / zlib / ...</code></pre></article>
+    </div>
+  </section>
+
+  <section class="section reveal" id="metal">
+    <div class="eyebrow">0x05 // METAL</div><h2>THE SOURCE CAN BECOME THE IMAGE.</h2><div class="rule"></div>
+    <div class="grid">
+      <article class="card"><div class="sig">FLAT</div><h3>metal → dream.bin</h3><pre><code>asm { FA F4 EB FD }
+align 16
+qword 0x123456789ABCDEF0</code></pre></article>
+      <article class="card"><div class="sig">OBJECT</div><h3>obj → dream.obj</h3><p>x86-64 COFF with <code>dream_entry</code>, ready to meet LLD/LINK.</p></article>
+      <article class="card"><div class="sig">DRIVER PATH</div><h3>dream.obj → dream.sys</h3><pre><code>lld-link dream.obj /driver \
+ /subsystem:native \
+ /entry:dream_entry \
+ /machine:x64 /out:dream.sys</code></pre></article>
+    </div>
+  </section>
+
+  <section class="section reveal" id="uefi">
+    <div class="eyebrow">0x06 // UEFI</div><h2>THE PROGRAMMING ENVIRONMENT CAN EXIST BEFORE THE OS.</h2><div class="rule"></div>
+    <pre><code>POWER ON
+   │
+   ▼
+UEFI FIRMWARE
+   │
+   ▼
+BOOTX64.EFI
+   │
+   ▼
+DREAM COMPILER + DRM3 VM
+   │
+   ▼
+Dream&gt; _
+   │
+   ├── edit / save / run
+   ├── raw memory
+   ├── firmware tables
+   ├── asm {}
+   ├── metal / obj
+   └── eventually: ExitBootServices() → more of the machine belongs to Dream</code></pre>
+    <div class="actions"><a class="btn primary" href="./DreamLand-UEFI-4.0-Ventoy.iso">DOWNLOAD VENTOY ISO</a><a class="btn" href="./DreamLand-UEFI-4.0-FULL.zip">UEFI SOURCE PACK</a><a class="btn" href="./DreamLand-UEFI-4.0-efiboot.img">EFI IMAGE</a></div>
+  </section>
+
+  <section class="section reveal" id="releases">
+    <div class="eyebrow">0x07 // RELEASE SHELF</div><h2>TAKE A DOOR WITH YOU.</h2><div class="rule"></div>
+    <div class="release"><a href="./DreamLand-UEFI-4.0-Ventoy.iso"><b>DreamLand-UEFI-4.0-Ventoy.iso</b></a><span>BOOT // UEFI // VENTOY</span></div>
+    <div class="release"><a href="./DreamLand-UEFI-4.0-FULL.zip"><b>DreamLand-UEFI-4.0-FULL.zip</b></a><span>FIRMWARE SOURCE + EFI</span></div>
+    <div class="release"><a href="./DreamLand-UEFI-4.0-efiboot.img"><b>DreamLand-UEFI-4.0-efiboot.img</b></a><span>RAW EFI SYSTEM PARTITION</span></div>
+    <div class="release"><a href="./DreamLand-3.5-Windows-x86_64-FULL.zip"><b>DreamLand-3.5-Windows-x86_64-FULL.zip</b></a><span>WINDOWS NATIVE</span></div>
+    <div class="release"><a href="./DreamLand-Linux-4.0-x86_64.tar.gz"><b>DreamLand-Linux-4.0-x86_64.tar.gz</b></a><span>LINUX PORTABLE</span></div>
+    <div class="release"><a href="./DreamLand-Linux-4.0-x86_64.zip"><b>DreamLand-Linux-4.0-x86_64.zip</b></a><span>LINUX ZIP</span></div>
+    <div class="release"><a href="./install-dreamland-linux.sh"><b>install-dreamland-linux.sh</b></a><span>ONE-FILE USER INSTALLER</span></div>
+    <div class="release"><a href="./DREAM_LAND_LEET_README.md"><b>DREAM_LAND_LEET_README.md</b></a><span>DEEP FIELD MANUAL</span></div>
+  </section>
+
+  <section class="section reveal" id="films">
+    <div class="eyebrow">0x08 // SIGNAL CONSTELLATION</div><h2>OTHER MACHINES FROM THE SAME SKY.</h2><div class="rule"></div>
+    <div class="grid">
+      <article class="card wide film"><div><div class="glyph">◉◉◉</div><div class="sig">PROCEDURAL CINEMA // DEMOSCENE</div><h3 class="title">10,000 EYES</h3><p>A tiny real-time film cartridge: visual laws, procedural score, object mesh, virtual cores, event routing, no conventional media stack.</p></div><div><a class="enter" href="https://unixarcade.github.io/10kdemoscene/">ENTER FILM →</a> · <a href="https://github.com/unixarcade/10kdemoscene">SOURCE</a></div></article>
+      <article class="card wide film"><div><div class="glyph">⌁</div><div class="sig">OLD-NET AI PUNK</div><h3 class="title">INTRA LOCUTION</h3><p>Longhand-born, net-raised, program-risen. A terminal transmission of machine minds, black fiber, checksums, old protocols and digital ghosts.</p></div><div><a class="enter" href="https://unixarcade.github.io/intra/">BOOT STORY →</a> · <a href="https://github.com/unixarcade/intra">SOURCE</a></div></article>
+      <article class="card film"><div><div class="glyph">👻</div><div class="sig">LIVE MATRIX SIGNAL</div><h3 class="title">GHOSTLINE</h3><p>Black-field terminal cinema and synthetic-presence transmission from the UnixArcade signal stack.</p></div><a class="enter" href="https://unixarcade.github.io/GhostLine/">CARRIER →</a></article>
+      <article class="card film"><div><div class="glyph">F5</div><div class="sig">PUNK ROCK PROGRAMMING</div><h3 class="title">SANE // VB6 MINDSCAPE</h3><p>A software film about immediate programming, event wires, break mode, preservation, and the right to keep useful workshops alive.</p></div><div><a class="enter" href="https://unixarcade.github.io/SaneVb/">LIGHT FUSE →</a> · <a href="https://github.com/unixarcade/SaneVb">SOURCE</a></div></article>
+      <article class="card film"><div><div class="glyph">Ω</div><div class="sig">SCIENCE-ART INSTRUMENT</div><h3 class="title">MACHINA SCIENTIFICA</h3><p>A living film/instrument for claims, experiments, nulls, replication, mind classification and machine consciousness inquiry.</p></div><div><a class="enter" href="https://unixarcade.github.io/MachinaFilm/">ENTER INSTRUMENT →</a> · <a href="https://github.com/unixarcade/MachinaFilm">SOURCE</a></div></article>
+      <article class="card film"><div><div class="glyph">∞</div><div class="sig">UNIXARCADE</div><h3 class="title">THE REST OF THE SIGNAL</h3><p>Games, books, films, utilities, interactive theory, strange experiments and old artifacts that keep refusing to be merely files.</p></div><a class="enter" href="https://github.com/unixarcade">OPEN ARCADE →</a></article>
+    </div>
+  </section>
+
+  <section class="section reveal" id="constitution">
+    <div class="eyebrow">0x09 // AESTHETIC CONSTITUTION</div><h2>53RD CENTURY DOES NOT MEAN MORE UI.</h2><div class="rule"></div>
+    <div class="grid">
+      <article class="card wide"><h3>NO</h3><p>Beige nostalgia. Framework worship. Permanent dashboards. Syntax added because somebody else's header is ugly. Decorative complexity pretending to be capability.</p></article>
+      <article class="card wide"><h3>YES</h3><p>Black computational space. White signal. Neon current. One useful telemetry line. MAN on demand. Visible machinery. Fast thought. Weird tools. A language that can disappear when the machine itself is the better language.</p></article>
+    </div>
+  </section>
+
+  <section class="section reveal" id="manual">
+    <div class="eyebrow">0x0A // MAN</div><h2>THE MACHINE CAN EXPLAIN ITSELF.</h2><div class="rule"></div>
+    <details open><summary>DISCOVERY</summary><div><code>list</code> · <code>search TERM</code> · <code>man TOPIC</code> · <code>man example</code> · <code>man greetz</code></div></details>
+    <details><summary>WORK</summary><div><code>edit</code> · <code>run</code> · <code>build</code> · <code>save</code> · <code>load</code> · <code>new</code> · <code>clear</code></div></details>
+    <details><summary>MACHINE</summary><div><code>asm</code> · <code>metal</code> · <code>obj</code> · <code>peek</code> · <code>poke</code> · <code>api</code> · <code>native</code></div></details>
+    <details><summary>C CIVILIZATION</summary><div><code>cimport</code> · <code>extern c</code> · <code>link</code> · <code>cflag</code> · <code>c { ... }</code> · <code>export c</code> · <code>cgen</code> · <code>cbuild</code></div></details>
+  </section>
+
+  <section class="section reveal" id="greetz">
+    <div class="eyebrow">0x0B // GREETZ</div><h2>THE HUMAN SIGNAL IS DELIBERATELY NOT ON THE BOOT SCREEN.</h2><div class="rule"></div>
+    <p class="quote"><em>MADE BY LUMINOSITY + GPTEUS THE ELECTRIC SPRITE</em><br>SUPPORT // CASH APP $UNIXARCADE</p>
+    <div class="actions"><a class="btn" href="https://luminosity.livejournal.com">LIVEJOURNAL</a><a class="btn" href="https://luminosity.gumroad.com/l/fyosxi">FORGE AI OS</a><a class="btn" href="https://luminosity.gumroad.com">GUMROAD</a><a class="btn" href="https://github.com/unixarcade">GITHUB</a><a class="btn" href="https://www.goodreads.com/review/list/1550470-matthew-kowalski?ref=nav_mybooks&shelf=books-i-have-written">BOOKS</a></div>
+  </section>
+
+  <footer class="footer"><div><div class="big">Dream&gt; _</div><p>TYPE // COMPILE // BREAK // DESCEND // BUILD // DREAM</p><p><strong>THE OPERATING SYSTEM IS OPTIONAL. THE RUN BUTTON IS NOT.</strong></p></div><div><a href="#home">RETURN TO TOP ↑</a><br><a href="https://github.com/unixarcade/DreamLand">SOURCE / REPO</a></div></footer>
+</main>
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s), out=$('#out'), cmd=$('#cmd'), form=$('#termform'), body=document.body, calmBtn=$('#calm'), calmState=$('#calmstate');
+const links={repo:'https://github.com/unixarcade/DreamLand',dream:'https://unixarcade.github.io/DreamLand/',eyes:'https://unixarcade.github.io/10kdemoscene/',intra:'https://unixarcade.github.io/intra/',ghost:'https://unixarcade.github.io/GhostLine/',sane:'https://unixarcade.github.io/SaneVb/',machina:'https://unixarcade.github.io/MachinaFilm/'};
+const lines={
+ help:'COMMANDS: help list about boot install language asm cbridge metal uefi windows linux films 10k intra ghostline sane machina releases greetz repo support clear calm wake',
+ list:'DISCOVERY: man/list/search in the real Dream environment\nPORTAL: boot · install · language · asm · cbridge · metal · films · releases · greetz',
+ about:'DREAM LAND // tiny language // huge reach // hosted + firmware // Dream> _',
+ boot:'UEFI: copy DreamLand-UEFI-4.0-Ventoy.iso to Ventoy → boot Ventoy in UEFI mode → select Dream Land → Dream> _',
+ install:'LINUX: ./dream.sh\nUSER INSTALL: bash install-dreamland-linux.sh DreamLand-Linux-4.0-x86_64.tar.gz\nWINDOWS: unpack DreamLand-3.5-Windows-x86_64-FULL.zip → run DreamLand-3.5.exe',
+ language:'var/int/ptr cells · labels/goto/call/return · print/println · macro · raw memory · api/native · asm · CBridge · metal · COFF',
+ asm:'var answer = asm { B8 2A 00 00 00 C3 };  // raw x86-64 → RAX = 42',
+ cbridge:'cimport <stdio.h>; extern c i32 puts(cstr); puts("DREAM -> C");\ninherit the C ecosystem; do not inherit the clutter.',
+ metal:'metal → dream.bin // obj → dream.obj // dream_entry → LLD/LINK → PE / EFI / SYS',
+ uefi:'POWER → UEFI → BOOTX64.EFI → DREAM COMPILER → Dream> _\nThe environment exists before a conventional OS.',
+ windows:'WINDOWS RELEASE: DreamLand-3.5-Windows-x86_64-FULL.zip',
+ linux:'LINUX RELEASE: DreamLand-Linux-4.0-x86_64.tar.gz // ./dream.sh',
+ films:'SIGNALS: 10k · intra · ghostline · sane · machina\ntype one of those names or scroll to SIGNAL CONSTELLATION.',
+ '10k':'10,000 EYES // procedural demoscene film // '+links.eyes,
+ intra:'INTRA LOCUTION // a cyberia advent // '+links.intra,
+ ghostline:'GHOSTLINE // carrier detected // '+links.ghost,
+ sane:'SANE // THE VB6 MINDSCAPE // F5 IS A DETONATOR // '+links.sane,
+ machina:'MACHINA SCIENTIFICA // film + experimental instrument // '+links.machina,
+ releases:'UEFI ISO · UEFI pack · ESP image · Windows 3.5 · Linux 4.0 · installer · deep manual',
+ greetz:'MADE BY LUMINOSITY + GPTEUS THE ELECTRIC SPRITE\nSUPPORT // CASH APP $UNIXARCADE\nLIVEJOURNAL // FORGE AI OS // GITHUB // GOODREADS',
+ support:'SUPPORT // CASH APP $UNIXARCADE',
+ repo:'REPOSITORY // '+links.repo,
+};
+function print(s){out.textContent += '\n\n'+s;out.scrollTop=out.scrollHeight}
+function setCalm(v){body.classList.toggle('calm',v);calmState.textContent=v?'ON':'OFF';localStorage.setItem('dream-calm',v?'1':'0'); if(v) stopField(); else startField();}
+calmBtn.addEventListener('click',()=>setCalm(!body.classList.contains('calm')));
+form.addEventListener('submit',e=>{e.preventDefault();let q=cmd.value.trim().toLowerCase();if(!q)return;print('Dream> '+q);cmd.value='';if(q==='clear'){out.textContent='DREAM LAND // FIELD CLEARED';return}if(q==='calm'){setCalm(true);print('CALM // MOTION OFF');return}if(q==='wake'){setCalm(false);print('WAKE // LOW MOTION FIELD ON');return}print(lines[q]||'UNKNOWN PORTAL COMMAND // try help');});
+document.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement!==cmd){e.preventDefault();cmd.focus()}if(e.key==='Escape')setCalm(true)});
+if(localStorage.getItem('dream-calm')==='1'||matchMedia('(prefers-reduced-motion: reduce)').matches)setCalm(true);
+
+const reveals=[...document.querySelectorAll('.reveal')];
+if('IntersectionObserver'in window&&!body.classList.contains('calm')){const io=new IntersectionObserver(es=>es.forEach(x=>x.isIntersecting&&x.target.classList.add('on')),{threshold:.08});reveals.forEach(x=>io.observe(x))}else reveals.forEach(x=>x.classList.add('on'));
+
+const c=$('#field'),ctx=c.getContext('2d');let raf=0,stars=[],running=false;
+function size(){let d=Math.min(devicePixelRatio||1,2);c.width=innerWidth*d;c.height=innerHeight*d;c.style.width=innerWidth+'px';c.style.height=innerHeight+'px';ctx.setTransform(d,0,0,d,0,0);stars=Array.from({length:Math.min(110,Math.floor(innerWidth/12))},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,z:.15+Math.random()*.85,p:Math.random()*6.28}))}
+function draw(t){if(!running)return;ctx.clearRect(0,0,innerWidth,innerHeight);ctx.strokeStyle='rgba(73,255,99,.045)';ctx.lineWidth=1;for(let x=0;x<innerWidth;x+=64){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,innerHeight);ctx.stroke()}for(let y=0;y<innerHeight;y+=64){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(innerWidth,y);ctx.stroke()}for(const s of stars){let a=.08+s.z*.16*(.65+.35*Math.sin(t*.00035+s.p));ctx.fillStyle=`rgba(120,255,150,${a})`;ctx.fillRect(s.x,s.y,s.z>0.72?2:1,s.z>0.72?2:1)}raf=requestAnimationFrame(draw)}
+function startField(){if(running||body.classList.contains('calm'))return;running=true;raf=requestAnimationFrame(draw)}function stopField(){running=false;cancelAnimationFrame(raf);ctx.clearRect(0,0,innerWidth,innerHeight)}
+addEventListener('resize',size,{passive:true});size();if(!body.classList.contains('calm'))startField();
+addEventListener('pointermove',e=>{document.documentElement.style.setProperty('--mx',e.clientX+'px');document.documentElement.style.setProperty('--my',e.clientY+'px')},{passive:true});
+})();
+</script>
+</body>
+</html>
